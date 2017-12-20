@@ -17,7 +17,7 @@ Processing : Using numpy and OpenCV, images are processed and stored as arrays o
              handwriting or not x's handwriting).
 
 Output: Depending on usage the program either returns:
-	i) A sentence saying if the given image was of Sriram's handwriting or not.  
+	i) A sentence saying if the given image was of x's handwriting or not.  
 	ii) A percentage value denoting the number of correct assignments had done in an array of input images.
 
 Limitaions: i) Depending on the value of k the accuracy of the program will change.
