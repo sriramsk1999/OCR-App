@@ -1,0 +1,51 @@
+#Checks accuracy from array of 20 samples
+
+import numpy as np, cv2, os   
+
+def load_images_from_folder(folder):    #Function to read all images in a given folder 
+                                        #and store them as 20x20 pixel images in a numpy array.
+    image_list = []
+    for filename in os.listdir(folder):
+        img = cv2.imread(os.path.join(folder,filename),0)
+        img = cv2.resize(img,(20,20))
+        img = np.reshape(img,(400))
+        image_list.append(img)
+    return image_list
+
+myimages = load_images_from_folder("***enter directory here***")
+myimages=np.array(myimages).astype(np.float32)
+
+otherimages = load_images_from_folder("***enter directory here***")
+otherimages=np.array(otherimages).astype(np.float32)
+
+trainData = np.vstack((myimages,otherimages)) #An array of images given to the computer for learning
+
+myhand=np.ones((***no. of images in myimages***,1)).astype(np.float32)
+other=np.zeros((***no. of images in otherimages***,1)).astype(np.float32)
+trainLabels=np.vstack((myhand,other)) #gives values to the training data. 1==true i.e my handwriting.0 == false i.e not mine.
+testLabels=np.vstack((np.ones((10,1)),np.zeros((10,1)))) 
+                                            
+print("Welcome. This is a basic handwriting recognition application. \n")
+print("It will print the accuracy of the given program from the given number of samples.")
+a=int(input("Enter: \n 1. Test application \n 2. Exit application"))    
+if a==1:
+        test1=load_images_from_folder("****enter directory with sample 10 images of x handwriting ")
+        test2=load_images_from_folder("****enter directory with sample 10 images of not x handwriting ")  
+        test=np.vstack((test1,test2))
+        test=np.reshape(test,(20,400)).astype(np.float32)
+      
+        
+        knn = cv2.ml.KNearest_create()                               #K Nearest Neighbour Algorithm
+        knn.train(trainData,cv2.ml.ROW_SAMPLE,trainLabels)
+        ret,result,neighbours,dist = knn.findNearest(test,k=3) 
+        
+        count=0
+        for i in range(len(result)):
+            if result[i] == testLabels[i]:
+                count+=1
+        accuracy=count/len(result)*100
+        print("The OCR Application can predict correct handwriting with an accuracy of:",accuracy,"%")
+elif a==2:
+        print("\nThank you for your time.")
+else:
+        print("Invalid input.")

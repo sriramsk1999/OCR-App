@@ -1,0 +1,49 @@
+#Checks if a single file is a sample of x's handwriting
+
+import numpy as np, cv2, os   
+
+def load_images_from_folder(folder):   #Function to read all images in a given folder 
+                                       #and store them as 20x20 pixel images in a numpy array.
+    image_list = []                    
+    for filename in os.listdir(folder):
+        img = cv2.imread(os.path.join(folder,filename),0)
+        img = cv2.resize(img,(20,20))
+        img = np.reshape(img,(400))   
+        image_list.append(img)
+    return image_list
+
+myimages = load_images_from_folder("***type directory here***") #use forward slashes(/) instead of \
+myimages=np.array(myimages).astype(np.float32)
+
+otherimages = load_images_from_folder("***type directory here***")
+otherimages=np.array(otherimages).astype(np.float32)
+
+trainData = np.vstack((myimages,otherimages)) #An array of images given to the computer for learning
+
+myhand=np.ones((***no. of images in myimages***,1)).astype(np.float32) 
+other=np.zeros((***no. of images in otherimages***,1)).astype(np.float32)
+trainLabels=np.vstack((myhand,other))     #gives values to the training data. 1==true i.e my handwriting
+                                          #0 == false i.e not my handwriting
+
+print("Welcome. This is a basic handwriting recognition application. \n")
+print("It will recognize whether a given character is written by x or by someone else.")
+a=int(input("Enter: \n 1. Test application \n 2. Exit application"))    
+if a==1:
+        directory=input("Enter directory of the file:\n") # Eg. "C:/Users/Desktop/ssk.jpeg"
+        test=cv2.imread(directory,0)
+        test=cv2.resize(test,(20,20))
+        test=np.reshape(test,(1,400)).astype(np.float32)
+        
+        knn = cv2.ml.KNearest_create()                                #K Nearest Neighbour Algorithm
+        knn.train(trainData,cv2.ml.ROW_SAMPLE,trainLabels)
+        ret,result,neighbours,dist = knn.findNearest(test,k=3) 
+        
+        if ret == 1.0:  
+            print("\nThe given sample is x's handwriting.")
+        else:
+            print("\nThe given sample is not x's handwriting.")
+elif a==2:
+        print("\nThank you for your time.")
+else:
+        print("Invalid input.")
+        
